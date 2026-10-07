@@ -68,6 +68,10 @@ class Board:
             changed |= old != new
         return changed
 
+
+    def has_won(self):
+        return any(2048 in row for row in self.grid)
+
     def can_move(self):
         if any(0 in row for row in self.grid):
             return True

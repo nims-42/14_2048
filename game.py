@@ -28,7 +28,7 @@ class Game:
         print("2048 — W/A/S/D to move, U to undo, Q to quit.")
         while True:
             self.display()
-            if any(2048 in row for row in self.board.grid):
+            if self.board.has_won():
                 print("You reached 2048!")
                 return
             if not self.board.can_move():
