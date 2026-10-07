@@ -34,23 +34,31 @@ class Game:
         if key not in moves:
             return False
 
+        # Save the current state before the move.
         old_grid = [row[:] for row in self.board.grid]
         old_score = self.board.score
 
         changed = moves[key]()
 
+        # Unchanged moves do nothing.
         if not changed:
             return False
 
-        self.history = [(old_grid, old_score)]
+        # Save one level of undo history.
+        self.history = [
+            (old_grid, old_score)
+        ]
 
+        # Add a new tile only after a successful move.
         self.board.add_random_tile()
 
+        # Update best score.
         self.best_score = max(
             self.best_score,
             self.board.score
         )
 
+        # Action-level feedback.
         if self.board.last_merge_count > 0:
             print(
                 f"Move {key.upper()} successful: "

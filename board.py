@@ -29,13 +29,19 @@ class Board:
         values = [x for x in line if x]
         result = []
         merge_count = 0
+        score_gained = 0
 
         i = 0
 
         while i < len(values):
             if i + 1 < len(values) and values[i] == values[i + 1]:
-                result.append(values[i] * 2)
+                merged_value = values[i] * 2
+
+                result.append(merged_value)
+
                 merge_count += 1
+                score_gained += merged_value
+
                 i += 2
             else:
                 result.append(values[i])
@@ -43,7 +49,7 @@ class Board:
 
         result += [0] * (SIZE - len(result))
 
-        return result, merge_count
+        return result, merge_count, score_gained
 
     def move_left(self):
         changed = False
@@ -51,10 +57,12 @@ class Board:
 
         for r in range(SIZE):
             old = self.grid[r][:]
-            new, merges = self.slide_line(old)
+            new, merges, score_gained = self.slide_line(old)
 
             self.grid[r] = new
+
             self.last_merge_count += merges
+            self.score += score_gained
 
             if old != new:
                 changed = True
@@ -69,11 +77,13 @@ class Board:
             old = self.grid[r][:]
             reversed_old = list(reversed(old))
 
-            new, merges = self.slide_line(reversed_old)
+            new, merges, score_gained = self.slide_line(reversed_old)
             new = list(reversed(new))
 
             self.grid[r] = new
+
             self.last_merge_count += merges
+            self.score += score_gained
 
             if old != new:
                 changed = True
@@ -87,12 +97,13 @@ class Board:
         for c in range(SIZE):
             old = [self.grid[r][c] for r in range(SIZE)]
 
-            new, merges = self.slide_line(old)
+            new, merges, score_gained = self.slide_line(old)
 
             for r in range(SIZE):
                 self.grid[r][c] = new[r]
 
             self.last_merge_count += merges
+            self.score += score_gained
 
             if old != new:
                 changed = True
@@ -107,13 +118,14 @@ class Board:
             old = [self.grid[r][c] for r in range(SIZE)]
             reversed_old = list(reversed(old))
 
-            new, merges = self.slide_line(reversed_old)
+            new, merges, score_gained = self.slide_line(reversed_old)
             new = list(reversed(new))
 
             for r in range(SIZE):
                 self.grid[r][c] = new[r]
 
             self.last_merge_count += merges
+            self.score += score_gained
 
             if old != new:
                 changed = True
