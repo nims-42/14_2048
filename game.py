@@ -19,7 +19,6 @@ class Game:
                 )
                 + "|"
             )
-
             print("+------+------+------+------+")
 
         print("Score:", self.board.score, " Best:", self.best_score)
@@ -40,15 +39,27 @@ class Game:
 
         changed = moves[key]()
 
-        if changed:
-            self.history = [(old_grid, old_score)]
-            self.board.add_random_tile()
-            self.best_score = max(
-                self.best_score,
-                self.board.score
-            )
+        if not changed:
+            return False
 
-        return changed
+        self.history = [(old_grid, old_score)]
+
+        self.board.add_random_tile()
+
+        self.best_score = max(
+            self.best_score,
+            self.board.score
+        )
+
+        if self.board.last_merge_count > 0:
+            print(
+                f"Move {key.upper()} successful: "
+                f"{self.board.last_merge_count} merge(s)."
+            )
+        else:
+            print(f"Move {key.upper()} successful.")
+
+        return True
 
     def undo(self):
         if not self.history:
@@ -59,6 +70,7 @@ class Game:
 
         self.board.grid = [row[:] for row in grid]
         self.board.score = score
+        self.board.last_merge_count = 0
 
         print("Move undone.")
         return True

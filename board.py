@@ -7,11 +7,19 @@ class Board:
     def __init__(self):
         self.grid = [[0] * SIZE for _ in range(SIZE)]
         self.score = 0
+        self.last_merge_count = 0
+
         self.add_random_tile()
         self.add_random_tile()
 
     def add_random_tile(self):
-        empty = [(r, c) for r in range(SIZE) for c in range(SIZE) if self.grid[r][c] == 0]
+        empty = [
+            (r, c)
+            for r in range(SIZE)
+            for c in range(SIZE)
+            if self.grid[r][c] == 0
+        ]
+
         if empty:
             r, c = random.choice(empty)
             self.grid[r][c] = 4 if random.random() < 0.1 else 2
@@ -48,7 +56,8 @@ class Board:
             self.grid[r] = new
             self.last_merge_count += merges
 
-            changed |= old != new
+            if old != new:
+                changed = True
 
         return changed
 
@@ -66,7 +75,8 @@ class Board:
             self.grid[r] = new
             self.last_merge_count += merges
 
-            changed |= old != new
+            if old != new:
+                changed = True
 
         return changed
 
@@ -83,7 +93,9 @@ class Board:
                 self.grid[r][c] = new[r]
 
             self.last_merge_count += merges
-            changed |= old != new
+
+            if old != new:
+                changed = True
 
         return changed
 
@@ -102,10 +114,11 @@ class Board:
                 self.grid[r][c] = new[r]
 
             self.last_merge_count += merges
-            changed |= old != new
+
+            if old != new:
+                changed = True
 
         return changed
-
 
     def has_won(self):
         return any(2048 in row for row in self.grid)
@@ -113,10 +126,13 @@ class Board:
     def can_move(self):
         if any(0 in row for row in self.grid):
             return True
+
         for r in range(SIZE):
             for c in range(SIZE):
                 if c + 1 < SIZE and self.grid[r][c] == self.grid[r][c + 1]:
                     return True
+
                 if r + 1 < SIZE and self.grid[r][c] == self.grid[r + 1][c]:
                     return True
+
         return False
