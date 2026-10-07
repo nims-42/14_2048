@@ -20,52 +20,90 @@ class Board:
     def slide_line(line):
         values = [x for x in line if x]
         result = []
+        merge_count = 0
 
         i = 0
+
         while i < len(values):
             if i + 1 < len(values) and values[i] == values[i + 1]:
                 result.append(values[i] * 2)
+                merge_count += 1
                 i += 2
             else:
                 result.append(values[i])
                 i += 1
 
-        return result + [0] * (SIZE - len(result))
+        result += [0] * (SIZE - len(result))
+
+        return result, merge_count
 
     def move_left(self):
         changed = False
+        self.last_merge_count = 0
+
         for r in range(SIZE):
             old = self.grid[r][:]
-            self.grid[r] = self.slide_line(old)
-            changed |= old != self.grid[r]
+            new, merges = self.slide_line(old)
+
+            self.grid[r] = new
+            self.last_merge_count += merges
+
+            changed |= old != new
+
         return changed
 
     def move_right(self):
         changed = False
+        self.last_merge_count = 0
+
         for r in range(SIZE):
             old = self.grid[r][:]
-            self.grid[r] = list(reversed(self.slide_line(list(reversed(old)))))
-            changed |= old != self.grid[r]
+            reversed_old = list(reversed(old))
+
+            new, merges = self.slide_line(reversed_old)
+            new = list(reversed(new))
+
+            self.grid[r] = new
+            self.last_merge_count += merges
+
+            changed |= old != new
+
         return changed
 
     def move_up(self):
         changed = False
+        self.last_merge_count = 0
+
         for c in range(SIZE):
             old = [self.grid[r][c] for r in range(SIZE)]
-            new = self.slide_line(old)
+
+            new, merges = self.slide_line(old)
+
             for r in range(SIZE):
                 self.grid[r][c] = new[r]
+
+            self.last_merge_count += merges
             changed |= old != new
+
         return changed
 
     def move_down(self):
         changed = False
+        self.last_merge_count = 0
+
         for c in range(SIZE):
             old = [self.grid[r][c] for r in range(SIZE)]
-            new = list(reversed(self.slide_line(list(reversed(old)))))
+            reversed_old = list(reversed(old))
+
+            new, merges = self.slide_line(reversed_old)
+            new = list(reversed(new))
+
             for r in range(SIZE):
                 self.grid[r][c] = new[r]
+
+            self.last_merge_count += merges
             changed |= old != new
+
         return changed
 
 

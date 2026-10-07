@@ -9,9 +9,19 @@ class Game:
 
     def display(self):
         print("\n" + "+------+------+------+------+")
+
         for row in self.board.grid:
-            print("|" + "|".join(f"{x:^6}" if x else f"{' ':^6}" for x in row) + "|")
+            print(
+                "|"
+                + "|".join(
+                    f"{x:^6}" if x else f"{' ':^6}"
+                    for x in row
+                )
+                + "|"
+            )
+
             print("+------+------+------+------+")
+
         print("Score:", self.board.score, " Best:", self.best_score)
 
     def move(self, key):
@@ -33,7 +43,10 @@ class Game:
         if changed:
             self.history = [(old_grid, old_score)]
             self.board.add_random_tile()
-            self.best_score = max(self.best_score, self.board.score)
+            self.best_score = max(
+                self.best_score,
+                self.board.score
+            )
 
         return changed
 
@@ -49,24 +62,32 @@ class Game:
 
         print("Move undone.")
         return True
+
     def run(self):
         print("2048 — W/A/S/D to move, U to undo, Q to quit.")
+
         while True:
             self.display()
+
             if self.board.has_won():
                 print("You reached 2048!")
                 return
+
             if not self.board.can_move():
                 print("No legal moves remain.")
                 return
+
             key = input("> ").strip().lower()
+
             if key == "q":
                 return
+
             if key == "u":
                 self.undo()
                 continue
+
             if key not in "wasd":
                 print("Use W/A/S/D.")
                 continue
-            if self.move(key):
-                self.best_score = max(self.best_score, self.board.score)
+
+            self.move(key)
